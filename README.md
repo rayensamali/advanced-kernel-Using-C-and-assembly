@@ -35,12 +35,22 @@ To compile and buid the kernel, follow these steps:
     ```sh
     ld -m elf_i386 -T link.ld -o kernel kasm.o kc.o
     ```
-4. **Test the kernel**
+ 4. **Test the kernel**
    Test your kernel using an emulator like QEMU:
    ```sh
    qemu-system-i386 -kernel kernel
    ```
-  
+## How It works
+- **Assembly Code** (`Kernel.asm`): this file contains the low level kernel entry point, stack setup, and keyboard interrupt handling. It also includes the Multiboot header required by GRUB to load the kernel.managing screen output, and basic kernel operations.
+
+- **C Codde**(`Lernel.asm`): Implements the Kernel's main functionality, including IDT and PIC initialization, handling keyboard input, managing screen output, and basic kernel operations.
+
+- **Keyboard Handlig**: The kenel processes Keyboard interupts, updates the screen based on user input , and handles special keys like Enter. the other special keys will be added in the upcoming commits.
+
+- **Screen output**: Uses direct video memory access to display text on the screen.
+
+##Contributing
+Contributions are welcome if you have suggestions, issues, or would like to contribute code, please submit issues or pull requests.
 
 
 
