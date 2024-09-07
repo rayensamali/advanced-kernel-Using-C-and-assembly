@@ -33,13 +33,22 @@ To compile and buid the kernel, follow these steps:
  3. **Link the Object Files**
     Link the object files to create a kernel binary:
     ```sh
-    ld -m elf_i386 -T link.ld -o kernel kasm.o kc.o
+    ld -m elf_i386 -T link.ld -o kernel kernel.o kc.o
     ```
  4. **Test the kernel**
    Test your kernel using an emulator like QEMU:
     ```sh
     qemu-system-i386 -kernel kernel
     ```
+5. **If you get the following error message**
+   ```sh
+     kc.o: In function `idt_init':
+    kernel.c:(.text+0x129): undefined reference to `__stack_chk_fail'
+   ```
+   Compile with the `-fno-stack-protector` option:
+   ```sh
+     gcc -fno-stack-protector -m32 -c kernel.c -o kernel.o
+   ```
 ## How It works
 - **Assembly Code** (`Kernel.asm`): this file contains the low level kernel entry point, stack setup, and keyboard interrupt handling. It also includes the Multiboot header required by GRUB to load the kernel.managing screen output, and basic kernel operations.
 
