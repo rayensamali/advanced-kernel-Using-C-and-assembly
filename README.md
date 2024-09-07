@@ -49,7 +49,7 @@ To compile and buid the kernel, follow these steps:
 
 - **Screen output**: Uses direct video memory access to display text on the screen.
   
-##Contributing
+## Contributing
 
 Contributions are welcome if you have suggestions, issues, or would like to contribute code, please submit issues or pull requests.
 
