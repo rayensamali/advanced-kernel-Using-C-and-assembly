@@ -52,6 +52,7 @@ To compile and buid the kernel, follow these steps:
 ## Sources
 
 [first source for printing just the string on the screen](https://arjunsreedharan.org/post/82710718100/kernels-101-lets-write-a-kernel)
+
 [second source for the keyboard interruption handling](https://arjunsreedharan.org/post/99370248137/kernels-201-lets-write-a-kernel-with-keyboard)
 
 [OS dev wiki](https://wiki.osdev.org/Expanded_Main_Page)
