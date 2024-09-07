@@ -48,8 +48,9 @@ To compile and buid the kernel, follow these steps:
 - **Keyboard Handlig**: The kenel processes Keyboard interupts, updates the screen based on user input , and handles special keys like Enter. the other special keys will be added in the upcoming commits.
 
 - **Screen output**: Uses direct video memory access to display text on the screen.
-
+  
 ##Contributing
+
 Contributions are welcome if you have suggestions, issues, or would like to contribute code, please submit issues or pull requests.
 
 
