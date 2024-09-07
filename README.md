@@ -46,6 +46,7 @@ To compile and buid the kernel, follow these steps:
     kernel.c:(.text+0x129): undefined reference to `__stack_chk_fail'
    ```
    Compile with the `-fno-stack-protector` option:
+   
    ```sh
      gcc -fno-stack-protector -m32 -c kernel.c -o kernel.o
    ```
