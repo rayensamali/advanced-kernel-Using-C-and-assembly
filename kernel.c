@@ -58,7 +58,7 @@ void idt_init(void){
 	 * populate IDT entry of keyboard's interrupt
 	 */
 	keyboard_address = (unsigned long) keyboard_handler;
-	IDT[0x21].offset_lowerbits = keyboard_address & 0xffff;
+	IDT[0x21].offset_lowerbits = keyboard_address & 0xFFFF;
 	IDT[0x21].selector = KERNEL_CODE_SEGMENT_OFFSET;
 	IDT[0x21].zero = 0;
 	IDT[0x21].type_attr = IDT_INTERRUPT_GATE;
@@ -98,7 +98,7 @@ void idt_init(void){
 	/* mask interrupts */
 
 	 write_port(PIC1_DATA_PORT, 0Xff);
-	 write_port(PIC1_DATA_PORT, 0Xff);
+	 write_port(PIC2_DATA_PORT, 0Xff);
 	
 	 /* fill the idt descriptor */
 
@@ -122,7 +122,7 @@ void kb_init(void){
 
 void kprint_newline(void){
 	unsigned int line_size = BYTES_FOR_EACH_ELEMENT * COLUMNS_IN_LINES;
-	current_loc= current_loc + (line_size - current_loc % (line_size));
+	current_loc= current_loc + (line_size - (current_loc % (line_size)));
 }
 void keyboard_handler_main(void){
 
@@ -137,7 +137,7 @@ void keyboard_handler_main(void){
 	
 	if(status & 0x1){
 		keycode = read_port(KEYBOARD_DATA_PORT);
-		if(keycode <0)
+		if(keycode <0 && keycode < 128)
 			return;
 
 		if(keycode == ENTRY_KEY_CODE){
@@ -172,6 +172,8 @@ void kmain(void)
 	
 	idt_init();
 	kb_init();
+	
+	while(1);
 
 	return;
 }
