@@ -50,9 +50,12 @@ To compile and buid the kernel, follow these steps:
 - **Screen output**: Uses direct video memory access to display text on the screen.
 
 ## Sources
+
 [first source for printing just the string on the screen](https://arjunsreedharan.org/post/82710718100/kernels-101-lets-write-a-kernel)
 [second source for the keyboard interruption handling](https://arjunsreedharan.org/post/99370248137/kernels-201-lets-write-a-kernel-with-keyboard)
+
 [OS dev wiki](https://wiki.osdev.org/Expanded_Main_Page)
+
 ## Contributing
 
 Contributions are welcome if you have suggestions, issues, or would like to contribute code, please submit issues or pull requests.
