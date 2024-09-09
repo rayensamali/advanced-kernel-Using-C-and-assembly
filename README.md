@@ -3,7 +3,7 @@
 this repository cotains the source code for a basic custom operating system kernel.
 This version of the kernel is desined to handle basic keyboard input and output to the screen, utilizing both C and assembly code.
 
-#Features
+# Features
 - Basic keyboard input handling
 - Screen output to the console
 - Interrupt Descriptor Table (IDT) setup
