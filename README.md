@@ -14,42 +14,30 @@ Before you start, make sure you have the following tools installed:
 - **Assembler**: nasm (Netwide assembler)
 - **C compielr**: GCC (GNU Compiler Collection)
 - **Linker**: LD (GNU Linker)
+- **CMake**: CMake build configuration tool
+- **Make**/**Ninja**: Build orchestration tools supported by CMake
 - **Bootloader**: GRUB (Grand Unified Bootloader)
 
 ## Building the Kernel
 
 To compile and buid the kernel, follow these steps:
   
- 1. **Assemeble the Assembly code**
-     Assemble the `kernel.asm` file using NASM:
+ 1. **Create build directory**
+     Create build directory where kernel will be built, this assumes that Ninja is used but you can replace it with Make:
      ```sh
-     nasm -f elf32 kernel.asm -o kernel.o
+     cmake -G Ninja -B build .
      ```
- 2. **Compile the C Code**
-    Compile the kernel.c file using GCC:
+ 2. **Build the source code**
+    This will build all the source code and link the resulting binary:
     ```sh
-    gcc -m32 -c kernel.c -o kc.o
+    cmake --build build
      ```
- 3. **Link the Object Files**
-    Link the object files to create a kernel binary:
-    ```sh
-    ld -m elf_i386 -T link.ld -o kernel kernel.o kc.o
-    ```
- 4. **Test the kernel**
+ 3. **Test the kernel**
    Test your kernel using an emulator like QEMU:
     ```sh
     qemu-system-i386 -kernel kernel
     ```
-5. **If you get the following error message**
-   ```sh
-     kc.o: In function `idt_init':
-    kernel.c:(.text+0x129): undefined reference to `__stack_chk_fail'
-   ```
-   Compile with the `-fno-stack-protector` option:
-   
-   ```sh
-     gcc -fno-stack-protector -m32 -c kernel.c -o kernel.o
-   ```
+
 ## How It works
 - **Assembly Code** (`Kernel.asm`): this file contains the low level kernel entry point, stack setup, and keyboard interrupt handling. It also includes the Multiboot header required by GRUB to load the kernel.managing screen output, and basic kernel operations.
 
