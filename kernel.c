@@ -2,13 +2,12 @@
  *  kernel.c
  */
 
+
+#include "file_system.h"
+#include "disk_io.h"
 #include "keyboard_map.h"
 #include "command_line.h"
-#define LINES 25
-#define COLUMNS_IN_LINES 80
-#define BYTES_FOR_EACH_ELEMENT 2
-
-#define SCREENSIZE (BYTES_FOR_EACH_ELEMENT * COLUMNS_IN_LINES * LINES)
+#include "kernel.h"
 #define KERNEL_CODE_SEGMENT_OFFSET  0x08
 #define IDT_INTERRUPT_GATE 0x8e
 
@@ -23,8 +22,7 @@
 #define IDT_SIZE 256
 #define ENTRY_KEY_CODE 0x1C
 
-#define MIN_CURSOR_POS 160
-#define TOP_BAR_HEIGHT 2
+
 
 extern unsigned char keyboard_map[128];
 extern unsigned char keyboard_map_shifted[128];
@@ -33,7 +31,7 @@ extern char read_port(unsigned short port);
 extern void write_port(unsigned short port, unsigned char data);
 extern void load_idt(unsigned long *idt_ptr);
 extern int command_index;
-
+extern char command_buffer[128];
 
 
 /* keyboard enable flag */
@@ -59,6 +57,91 @@ struct IDT_entry {
 
 struct IDT_entry IDT[IDT_SIZE];
 
+
+
+/*Printing an integer function*/
+
+void print_int(int num) {
+    char buffer[12];  // Buffer to hold the string, enough for a 32-bit integer (including sign and null terminator)
+    int i = 0;
+    int is_negative = 0;
+
+    // Handle negative numbers
+    if (num < 0) {
+        is_negative = 1;
+        num = -num;  // Convert to positive
+    }
+
+    // Generate digits in reverse order
+    if (num == 0) {
+        buffer[i++] = '0';
+    } else {
+        while (num > 0) {
+            buffer[i++] = (num % 10) + '0';  // Get the last digit and convert it to a character
+            num /= 10;
+        }
+    }
+
+    // Add negative sign if needed
+    if (is_negative) {
+        buffer[i++] = '-';
+    }
+
+    // Null-terminate the string
+    buffer[i] = '\0';
+
+    // Reverse the string since the digits were added in reverse order
+    for (int j = 0; j < i / 2; j++) {
+        char temp = buffer[j];
+        buffer[j] = buffer[i - 1 - j];
+        buffer[i - 1 - j] = temp;
+    }
+
+    // Print the resulting string
+    print_string(buffer);
+}
+
+
+
+/*
+ * Moves the cursor position in VGA text mode using hardware registers
+ */
+void move_cursor(unsigned int location) {
+    unsigned short pos = location / 2;  // Divide by 2 since each character is 2 bytes (char + attribute)
+    
+    // Update hardware cursor position using VGA ports 0x3D4 (command) and 0x3D5 (data)
+    write_port(0x3D4, 0x0F);  // Send lower byte of cursor position
+    write_port(0x3D5, (unsigned char)(pos & 0xFF));
+    
+    write_port(0x3D4, 0x0E);  // Send higher byte of cursor position
+    write_port(0x3D5, (unsigned char)((pos >> 8) & 0xFF));
+}
+
+
+
+/*
+ * scroll screen function
+ */
+
+
+void scroll_screen(void) {
+    unsigned int line_size = COLUMNS_IN_LINES * 2;
+    unsigned int i;
+
+    // Move all lines up by one line
+    for (i = line_size; i < SCREENSIZE; i++) {
+        vidptr[i - line_size] = vidptr[i];
+    }
+
+    // Clear the last line (fill it with spaces)
+    for (i = SCREENSIZE - line_size; i < SCREENSIZE; i += 2) {
+        vidptr[i] = ' ';       // Blank character
+        vidptr[i + 1] = 0x07;  // Light grey on black attribute
+    }
+}
+
+
+
 /*
  * Clears the screen
  */
@@ -78,6 +161,7 @@ void print_string(const char *str) {
     unsigned int i = 0;
     /* Loop to write string to video memory */
     while (str[i] != '\0') {
+        if(str[i]=='\n') kprint_newline();
         vidptr[current_loc++] = str[i++]; /* The character's ASCII */
         vidptr[current_loc++] = 0x07;     /* Light grey on black screen */
     }
@@ -119,17 +203,42 @@ void idt_init(void) {
  * Prints a newline on the screen
  */
 void kprint_newline(void) {
-    unsigned int line_size = BYTES_FOR_EACH_ELEMENT * COLUMNS_IN_LINES;
-    current_loc = current_loc + (line_size - (current_loc % line_size));
+    unsigned int line_size = COLUMNS_IN_LINES * 2;
+
+    // Clear remaining characters in the current line
+    unsigned int start = current_loc;
+    unsigned int end = (current_loc / line_size + 1) * line_size;
+    for (unsigned int i = start; i < end; i += 2) {
+        vidptr[i] = ' ';       // Clear the character
+        vidptr[i + 1] = 0x07;  // Light grey on black attribute
+    }
+
+    // Move cursor to the start of the next line
+    current_loc = end;
+
+    // Scroll the screen if needed
+    if (current_loc >= SCREENSIZE) {
+        scroll_screen();
+        current_loc = (LINES - 1) * line_size;  // Move cursor to the last line
+    }
+
+    // Update the hardware cursor to reflect the new position
+    move_cursor(current_loc);
 }
+
+
+
+
+
+
 /*
  * Displays the top bar with tabs
  */
 void display_top_bar(void) {
     unsigned short i;
     unsigned short local_cursor = 0;  // Start at the beginning of the screen
-    char *tabs[] = {" Home ", " Text Editor ", " Command line "}; // Tab names
-    int num_tabs = 3;  // Number of tabs
+    char *tabs[] = {" Home "," Command line "}; // Tab names
+    int num_tabs = 2;  // Number of tabs
     unsigned char attribute = 0x71;  // Blue text (1) on Gray background (7)
 
     // Clear the first line and set background to gray
@@ -185,19 +294,7 @@ void kb_init(void) {
 
 
 
-/*
- * Moves the cursor position in VGA text mode using hardware registers
- */
-void move_cursor(unsigned int location) {
-    unsigned short pos = location / 2;  // Divide by 2 since each character is 2 bytes (char + attribute)
-    
-    // Update hardware cursor position using VGA ports 0x3D4 (command) and 0x3D5 (data)
-    write_port(0x3D4, 0x0F);  // Send lower byte of cursor position
-    write_port(0x3D5, (unsigned char)(pos & 0xFF));
-    
-    write_port(0x3D4, 0x0E);  // Send higher byte of cursor position
-    write_port(0x3D5, (unsigned char)((pos >> 8) & 0xFF));
-}
+
 
 /*
  * Blinks the cursor at the current location using hardware cursor control
@@ -261,14 +358,8 @@ void keyboard_handler_main(void) {
         } else if (keycode == 0x3C) {  // F2 key (Text Editor)
             clear_screen();
             display_top_bar();
-            kprint_newline();
-            keyboard_enabled = 1;  // Enable typing on the Text Editor page
-            return;
-        } else if (keycode == 0x3D) {  // F3 key (Root File System)
-            clear_screen();
-            display_top_bar();
             print_command_prompt();
-            keyboard_enabled = 1;  // Enable typing on the Root File System page
+            keyboard_enabled = 1;  // Enable typing on the Text Editor page
             return;
         }
 
@@ -285,37 +376,45 @@ void keyboard_handler_main(void) {
 
         /* Handle Backspace key */
         if (keycode == 0x0E) {  // Backspace key
-            if (current_loc > MIN_CURSOR_POS) {
+            // Ensure we don't go past the command prompt
+            if (current_loc > MIN_CURSOR_POS + (8 * BYTES_FOR_EACH_ELEMENT)) {  // Adjust for the length of the prompt "TUN-OS> "
                 current_loc -= 2;  // Move back by one character (2 bytes per character in video memory)
                 vidptr[current_loc] = ' ';  // Clear the character at cursor
                 vidptr[current_loc + 1] = 0x07;  // Set the attribute (light grey on black)
                 command_index--;
-		move_cursor(current_loc);  // Update cursor position
             }
             return;
         }
+
+	/* Handle Enter key */
+          if (keycode == ENTRY_KEY_CODE) {
+              command_buffer[command_index] = '\0';  // Null-terminate the command
+              kprint_newline();  // Move to a new line
+              execute_command();  // Execute the current command
+//              print_command_prompt();  // Print the prompt for the next command
+              command_index = 0;  // Reset command index for the next command
+              return;
+          }
 
         /* Handle regular key input if keyboard is enabled */
-        if (keycode < 128) {
-            if (shift_pressed) {
-                vidptr[current_loc++] = keyboard_map_shifted[(unsigned char)keycode];  // Use shifted map when Shift is pressed
-            } else {
-                vidptr[current_loc++] = keyboard_map[(unsigned char)keycode];  // Use normal map when Shift is not pressed
-            }
-            vidptr[current_loc++] = 0x07;  /* Light grey on black */
-        }
-
-        /* Handle Enter key */
-        if (keycode == ENTRY_KEY_CODE) {
-            kprint_newline();
-	    execute_command();
-            return;
-        }
+if (keycode < 128) {
+    char character;
+    if (shift_pressed) {
+        character = keyboard_map_shifted[(unsigned char)keycode];
+    } else {
+        character = keyboard_map[(unsigned char)keycode];
     }
-
-    // Update cursor position on screen
-    move_cursor(current_loc);
-}
+    
+    // Only add to command buffer if the character is a valid printable character
+    if (character >= ' ' && character <= '~') { // ASCII range for printable characters
+        add_to_command_buffer(character);
+    } else if (keycode == ENTRY_KEY_CODE) {
+        command_buffer[command_index] = '\0';  // Null-terminate the command
+        kprint_newline();  // Move to a new line
+        execute_command();  // Execute the current command
+        print_command_prompt();  // Print the prompt for the next command
+    }
+}}}
 
 /*
  * Kernel main function
@@ -325,6 +424,7 @@ void kmain(void) {
     display_top_bar();
     kprint_newline();
     display_home_page();
+    initialize_file_system();
     idt_init();
     kb_init();
 
