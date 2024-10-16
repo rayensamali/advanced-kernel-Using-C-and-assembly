@@ -35,7 +35,6 @@
     - [🧪 Tests](#-tests)
 - [📌 Project Roadmap](#-project-roadmap)
 - [🤝 Contributing](#-contributing)
-- [🎗 License](#-license)
 - [🙌 Acknowledgments](#-acknowledgments)
 
 ---
