@@ -42,13 +42,17 @@
 
 ## 📍 Overview
 
-<code>❯ REPLACE-ME</code>
+<code>❯ This repository contains the source code for a basic custom operating system kernel named **TUN-OS**. This version of the kernel handles basic keyboard input, output to the screen, and manages interrupts, utilizing both C and assembly code.</code>
 
 ---
 
 ## 👾 Features
 
-<code>❯ REPLACE-ME</code>
+<code>❯ - **Basic Keyboard Input Handling**: Processes user input via the keyboard, including special keys like Enter and Backspace.
+- **Screen Output**: Direct text output to the console using video memory.
+- **Interrupt Descriptor Table (IDT) Setup**: Proper initialization of interrupt handling.
+- **Programmable Interrupt Controllers (PIC) Initialization**: Setting up the PIC to manage hardware interrupts.
+</code>
 
 ---
 
@@ -80,34 +84,7 @@
 
 ---
 
-## 🧩 Modules
 
-<details closed><summary>.</summary>
-
-| File | Summary |
-| --- | --- |
-| [link.ld](https://github.com/rayensamali/C-kernel/blob/main/link.ld) | <code>❯ REPLACE-ME</code> |
-| [file_system.h](https://github.com/rayensamali/C-kernel/blob/main/file_system.h) | <code>❯ REPLACE-ME</code> |
-| [io.c](https://github.com/rayensamali/C-kernel/blob/main/io.c) | <code>❯ REPLACE-ME</code> |
-| [keyboard_map.h](https://github.com/rayensamali/C-kernel/blob/main/keyboard_map.h) | <code>❯ REPLACE-ME</code> |
-| [disk_io.h](https://github.com/rayensamali/C-kernel/blob/main/disk_io.h) | <code>❯ REPLACE-ME</code> |
-| [kernel-1](https://github.com/rayensamali/C-kernel/blob/main/kernel-1) | <code>❯ REPLACE-ME</code> |
-| [stringlib.h](https://github.com/rayensamali/C-kernel/blob/main/stringlib.h) | <code>❯ REPLACE-ME</code> |
-| [kernel.asm](https://github.com/rayensamali/C-kernel/blob/main/kernel.asm) | <code>❯ REPLACE-ME</code> |
-| [disk_io.c](https://github.com/rayensamali/C-kernel/blob/main/disk_io.c) | <code>❯ REPLACE-ME</code> |
-| [command_line.h](https://github.com/rayensamali/C-kernel/blob/main/command_line.h) | <code>❯ REPLACE-ME</code> |
-| [disk.img](https://github.com/rayensamali/C-kernel/blob/main/disk.img) | <code>❯ REPLACE-ME</code> |
-| [io.h](https://github.com/rayensamali/C-kernel/blob/main/io.h) | <code>❯ REPLACE-ME</code> |
-| [kernel.h](https://github.com/rayensamali/C-kernel/blob/main/kernel.h) | <code>❯ REPLACE-ME</code> |
-| [Makefile](https://github.com/rayensamali/C-kernel/blob/main/Makefile) | <code>❯ REPLACE-ME</code> |
-| [stringlib.c](https://github.com/rayensamali/C-kernel/blob/main/stringlib.c) | <code>❯ REPLACE-ME</code> |
-| [kernel.c](https://github.com/rayensamali/C-kernel/blob/main/kernel.c) | <code>❯ REPLACE-ME</code> |
-| [file_system.c](https://github.com/rayensamali/C-kernel/blob/main/file_system.c) | <code>❯ REPLACE-ME</code> |
-| [command_line.c](https://github.com/rayensamali/C-kernel/blob/main/command_line.c) | <code>❯ REPLACE-ME</code> |
-
-</details>
-
----
 
 ## 🚀 Getting Started
 
@@ -128,35 +105,21 @@ Build the project from source:
 ```sh
 ❯ cd C-kernel
 ```
-
-3. Install the required dependencies:
-```sh
-❯ gcc -o myapp main.c
-```
-
 ### 🤖 Usage
 
 To run the project, execute the following command:
 
 ```sh
-❯ ./myapp
-```
-
-### 🧪 Tests
-
-Execute the test suite using the following command:
-
-```sh
-❯ /* No common unit test framework in C */
+❯ make;make run
 ```
 
 ---
 
 ## 📌 Project Roadmap
 
-- [X] **`Task 1`**: <strike>Implement feature one.</strike>
-- [ ] **`Task 2`**: Implement feature two.
-- [ ] **`Task 3`**: Implement feature three.
+- [X] **`Task 1`**: <strike>create the keyboard driver</strike>
+- [X] **`Task 2`**: <strike> create a home page and command line.</strike>
+- [X] **`Task 3`**: <strike> create a file system.</strike>
 
 ---
 
