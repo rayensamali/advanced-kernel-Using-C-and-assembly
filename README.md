@@ -119,7 +119,7 @@ To run the project, execute the following command:
 - [X] **`Task 1`**: <strike>create the keyboard driver</strike>
 - [X] **`Task 2`**: <strike> create a home page and command line.</strike>
 - [X] **`Task 3`**: <strike> create a file system.</strike>
-- [] **`Task 3`**: <strike> Memory management.</strike>
+- [ ]**`Task 3`**:  Memory management .
 
 ---
 
