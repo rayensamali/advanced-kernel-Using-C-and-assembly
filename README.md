@@ -115,11 +115,10 @@ To run the project, execute the following command:
 ---
 
 ## 📌 Project Roadmap
-
-- [X] **`Task 1`**: <strike>create the keyboard driver</strike>
-- [X] **`Task 2`**: <strike> create a home page and command line.</strike>
-- [X] **`Task 3`**: <strike> create a file system.</strike>
-  - (coming soon) **`Task 3`**:  Memory management .
+- [X] **`Task 1`**: ~~Create the keyboard driver~~  
+- [X] **`Task 2`**: ~~Create a home page and command line~~  
+- [X] **`Task 3`**: ~~Create a file system~~  
+- [ ] **`Task 4`**: Memory management *(coming soon)*  
 
 ---
 
